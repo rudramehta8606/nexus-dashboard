@@ -28,11 +28,13 @@ export default function Inventory() {
   const fetchProjects = async () => {
     try {
       const res = await fetch('/api/projects');
+      if (!res.ok) throw new Error('Failed to fetch projects');
       const data = await res.json();
       setProjects(data);
-      setLoading(false);
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 

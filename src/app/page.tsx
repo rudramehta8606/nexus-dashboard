@@ -14,22 +14,36 @@ import {
 import Link from 'next/link';
 
 export default function Dashboard() {
-  const [data, setData] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch('/api/dashboard/stats')
-      .then(res => res.json())
-      .then(resData => {
-        setData(resData);
-        setLoading(false);
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch stats');
+        return res.json();
       })
-      .catch(err => console.error(err));
+      .then(resData => setData(resData))
+      .catch(err => {
+        console.error(err);
+        setError("Unable to connect to the database. Please ensure your MONGODB_URI is correct and your IP is whitelisted in MongoDB Atlas.");
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   if (loading) return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
       <div className="animate-spin" style={{ width: '40px', height: '40px', border: '3px solid rgba(59, 130, 246, 0.2)', borderTopColor: '#3b82f6', borderRadius: '50%' }}></div>
+    </div>
+  );
+
+  if (error) return (
+    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '80vh', textAlign: 'center', padding: '20px' }}>
+      <div style={{ padding: '24px', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', borderRadius: '16px', maxWidth: '400px' }}>
+        <h3 style={{ marginBottom: '8px' }}>Connection Error</h3>
+        <p style={{ fontSize: '14px' }}>{error}</p>
+        <button onClick={() => window.location.reload()} style={{ marginTop: '16px', background: '#ef4444', border: 'none', color: 'white', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer' }}>Retry Integration</button>
+      </div>
     </div>
   );
 
