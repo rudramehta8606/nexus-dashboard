@@ -14,7 +14,7 @@ export async function GET() {
     // Aggregate Revenue by month
     const revenueByMonth = new Map();
 
-    projects.forEach(project => {
+    projects.forEach((project: any) => {
       // Clients
       const clientName = project.client;
       if (!clientMap.has(clientName)) {
@@ -42,9 +42,9 @@ export async function GET() {
     });
 
     return NextResponse.json({
-      clients: Array.from(clientMap.values()).sort((a, b) => b.totalValue - a.totalValue),
-      categories: Array.from(categoryMap.values()).sort((a, b) => b.value - a.value),
-      revenueTrend: Array.from(revenueByMonth.entries()).map(([month, value]) => ({ month, value }))
+      clients: Array.from(clientMap.values()).sort((a: any, b: any) => b.totalValue - a.totalValue),
+      categories: Array.from(categoryMap.values()).sort((a: any, b: any) => b.value - a.value),
+      revenueTrend: Array.from(revenueByMonth.entries()).map(([month, value]: [any, any]) => ({ month, value }))
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

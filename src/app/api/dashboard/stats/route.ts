@@ -10,12 +10,12 @@ export async function GET() {
     // Aggregate project data
     const projects = await Project.find({}).sort({ createdAt: -1 });
     const totalProjects = projects.length;
-    const totalRevenue = projects.reduce((acc, curr) => acc + curr.value, 0);
-    const activeProjects = projects.filter(p => p.status === 'In Progress').length;
+    const totalRevenue = projects.reduce((acc: number, curr: any) => acc + curr.value, 0);
+    const activeProjects = projects.filter((p: any) => p.status === 'In Progress').length;
     
     // Compute average completion time in days between creation and deadline
     const avgCompletionDays = projects.length > 0 
-      ? Math.round(projects.reduce((acc, p) => {
+      ? Math.round(projects.reduce((acc: number, p: any) => {
           const diffSpan = new Date(p.deadline).getTime() - new Date(p.createdAt || Date.now()).getTime();
           return acc + diffSpan / (1000 * 3600 * 24);
         }, 0) / projects.length) 
@@ -57,7 +57,7 @@ export async function GET() {
         avgCompletionDays
       },
       recentActivity,
-      chartData: visitors.history.map(h => ({
+      chartData: visitors.history.map((h: any) => ({
         date: new Date(h.date).toLocaleDateString('en-US', { weekday: 'short' }),
         visits: h.value,
         revenue: Math.floor(h.value * 1.5) // Mock logic for revenue trend
