@@ -8,10 +8,32 @@ export async function GET() {
     await connectDB();
 
     // Aggregate project data
-    const projects = await Project.find({});
+    const projects = await Project.find({}).sort({ createdAt: -1 });
     const totalProjects = projects.length;
     const totalRevenue = projects.reduce((acc, curr) => acc + curr.value, 0);
     const activeProjects = projects.filter(p => p.status === 'In Progress').length;
+    
+    // Compute average completion time in days between creation and deadline
+    const avgCompletionDays = projects.length > 0 
+      ? Math.round(projects.reduce((acc, p) => {
+          const diffSpan = new Date(p.deadline).getTime() - new Date(p.createdAt || Date.now()).getTime();
+          return acc + diffSpan / (1000 * 3600 * 24);
+        }, 0) / projects.length) 
+      : 0;
+      
+    // Recent activity based on latest projects
+    const recentActivity = projects.slice(0, 5).map(p => {
+      let statusValue = p.status === 'Completed' ? 'success' : p.status === 'Archived' ? 'warning' : 'info';
+      let title = '';
+      if (p.status === 'Completed') title = `Project "${p.name}" completed`;
+      else if (p.status === 'In Progress') title = `New project "${p.name}" started`;
+      else title = `Project "${p.name}" archived`;
+      
+      const daysAgo = Math.floor((Date.now() - new Date(p.createdAt).getTime()) / (1000 * 3600 * 24));
+      const timeStr = daysAgo === 0 ? 'Today' : `${daysAgo}d ago`;
+
+      return { title, time: timeStr, status: statusValue };
+    });
     
     // Get or create visit metrics (mocking for initial load)
     let visitors = await Metric.findOne({ type: 'visitors' });
@@ -31,8 +53,10 @@ export async function GET() {
         totalProjects,
         totalRevenue,
         activeProjects,
-        totalVisitors: visitors.value
+        totalVisitors: visitors.value,
+        avgCompletionDays
       },
+      recentActivity,
       chartData: visitors.history.map(h => ({
         date: new Date(h.date).toLocaleDateString('en-US', { weekday: 'short' }),
         visits: h.value,

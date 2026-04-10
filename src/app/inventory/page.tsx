@@ -15,6 +15,7 @@ import {
 
 export default function Inventory() {
   const [projects, setProjects] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -66,12 +67,24 @@ export default function Inventory() {
   const deleteProject = async (id: string) => {
     if (!confirm('Are you sure you want to delete this project?')) return;
     try {
-      await fetch(`/api/projects/${id}`, { method: 'DELETE' });
-      fetchProjects();
+      const res = await fetch(`/api/projects/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        fetchProjects();
+      } else {
+        const errorData = await res.json();
+        alert(`Error: ${errorData.error || 'Failed to delete project'}`);
+      }
     } catch (err) {
-      console.error(err);
+      console.error('Delete error:', err);
+      alert('An unexpected error occurred while deleting the project.');
     }
   };
+
+  const filteredProjects = projects.filter(project => 
+    project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    project.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    project.category?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="animate-fade-in">
@@ -96,6 +109,8 @@ export default function Inventory() {
             <Search size={18} style={{ position: 'absolute', left: '12px', top: '10px', color: '#666' }} />
             <input 
               type="text" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search projects..." 
               style={{ 
                 width: '100%', 
@@ -137,7 +152,7 @@ export default function Inventory() {
                 <tr>
                   <td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: '#666' }}>No projects found. Create one to get started!</td>
                 </tr>
-              ) : projects.map((project) => (
+              ) : filteredProjects.map((project) => (
                 <tr key={project._id} style={{ borderBottom: '1px solid var(--card-border)', transition: 'background 0.2s' }} className="table-row-hover">
                   <td style={{ padding: '16px 24px' }}>
                     <div>

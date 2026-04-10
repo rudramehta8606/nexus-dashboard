@@ -74,9 +74,9 @@ export default function Dashboard() {
         />
         <MetricCard 
           label="Avg. Completion" 
-          value="18 days" 
-          change="4 days" 
-          isPositive={false} 
+          value={`${data.summary.avgCompletionDays || 0} days`} 
+          change={data.summary.avgCompletionDays > 30 ? 'Overdue risks' : 'On track'} 
+          isPositive={data.summary.avgCompletionDays <= 30} 
           Icon={Clock} 
           delay="0.3s"
         />
@@ -92,13 +92,7 @@ export default function Dashboard() {
           </div>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            {[
-              { title: 'Project "Echo" completed', time: '2h ago', status: 'success' },
-              { title: 'New lead from contact form', time: '5h ago', status: 'info' },
-              { title: 'Meeting scheduled with Acme Corp', time: '8h ago', status: 'warning' },
-              { title: 'Payment received: $4,500', time: '12h ago', status: 'success' },
-              { title: 'Review pending: Project Zephyr', time: '1d ago', status: 'warning' },
-            ].map((activity, i) => (
+            {data.recentActivity && data.recentActivity.length > 0 ? data.recentActivity.map((activity: any, i: number) => (
               <div key={i} style={{ display: 'flex', gap: '12px' }}>
                 <div style={{ 
                   width: '8px', 
@@ -112,7 +106,9 @@ export default function Dashboard() {
                   <p style={{ fontSize: '12px', color: '#666' }}>{activity.time}</p>
                 </div>
               </div>
-            ))}
+            )) : (
+              <p style={{ color: '#888', fontSize: '14px' }}>No recent activity securely captured.</p>
+            )}
           </div>
         </div>
       </div>
