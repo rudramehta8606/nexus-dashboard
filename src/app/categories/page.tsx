@@ -9,13 +9,7 @@ import {
   Tooltip,
   Legend
 } from 'recharts';
-import { 
-  Layers, 
-  Layout, 
-  Smartphone, 
-  Globe,
-  Palette
-} from 'lucide-react';
+// No lucide icons used in this file currently
 
 const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981'];
 

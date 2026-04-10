@@ -6,11 +6,9 @@ import {
   Trash2, 
   Search, 
   Filter,
-  MoreVertical,
   CheckCircle2,
   Clock,
-  Archive,
-  ChevronDown
+  Archive
 } from 'lucide-react';
 
 export default function Inventory() {

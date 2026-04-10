@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useTheme } from '@/components/ThemeProvider';
 import { 
-  Settings, 
   User, 
   Shield, 
   Bell, 
@@ -18,8 +17,6 @@ import {
   Monitor,
   ToggleRight,
   ToggleLeft,
-  Mail,
-  Slack,
   CreditCard
 } from 'lucide-react';
 
@@ -194,7 +191,7 @@ export default function SettingsPage() {
                   ].map(t => (
                     <div 
                       key={t.id}
-                      onClick={() => setTheme(t.id)}
+                      onClick={() => setTheme(t.id as 'light' | 'dark' | 'system')}
                       style={{
                         flex: 1,
                         padding: '16px',
@@ -328,7 +325,7 @@ export default function SettingsPage() {
                       fontSize: '13px',
                       fontWeight: '500',
                       background: int.connected ? 'transparent' : 'white',
-                      color: int.connected ? '#white' : 'black',
+                      color: int.connected ? 'white' : 'black',
                       border: int.connected ? '1px solid var(--card-border)' : 'none',
                       cursor: 'pointer'
                     }}
